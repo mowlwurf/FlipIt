@@ -31,20 +31,21 @@ if(!$sIndex)
 	// initialise TableGen with optional Config
 	$oTab = new TableGen(True);
 }
-$oTab = new TableGen();
-// get generated boardinformations
-$aBoardMatrix = $oTab->getBoardMatrix();
+else 
+{
+	$oTab = new TableGen();
+}
 
 switch($sAction)
 {
 	default:
 	case false:		// initialise TableGen with optional Config
-					//$oTab = new TableGen(True);
-					// get generated boardinformations
-					//$aBoardMatrix = $oTab->getBoardMatrix();
+					$oTab = new TableGen(True);
+					//get generated boardinformations
+					$aBoardMatrix = $oTab->getBoardMatrix();
 					break;
 					
-	case 'flip':	$oTabhandler = new TableHandler($aBoardMatrix);
+	case 'flip':	$oTabhandler = new TableHandler($_SESSION['aBoardMatrix']);
 					$aColisionTabs = $oTabhandler->getColidingTabs($sIndex);
 					$sJSONAnswer = Array('status' => $aColisionTabs);
 					echo json_encode($sJSONAnswer);

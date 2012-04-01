@@ -1,5 +1,6 @@
 <?php
-
+error_reporting(E_ALL);
+ini_set('display_errors','1');
 /**
  * Spielfeld 25*25 Felder
  * 
@@ -28,26 +29,27 @@ $sIndex = isset($_POST['index']) && trim($_POST['index']) != '' ? $_POST['index'
  */
 if(!$sIndex)
 {
-	// initialise TableGen with optional Config
+	session_start();
 	$oTab = new TableGen(True);
+	$_SESSION['aBoardMatrix'] = $oTab->getBoardMatrix();
 }
-else 
-{
-	$oTab = new TableGen();
-}
+ 		
+//$oTab = new TableGen();
+// get generated boardinformations
 
 switch($sAction)
 {
 	default:
 	case false:		// initialise TableGen with optional Config
-					$oTab = new TableGen(True);
+					//$oTab = new TableGen(True);
 					//get generated boardinformations
-					$aBoardMatrix = $oTab->getBoardMatrix();
+					//$aBoardMatrix = $oTab->getBoardMatrix();
 					break;
 					
-	case 'flip':	$oTabhandler = new TableHandler($_SESSION['aBoardMatrix']);
-					$aColisionTabs = $oTabhandler->getColidingTabs($sIndex);
-					$sJSONAnswer = Array('status' => $aColisionTabs);
+	case 'flip':	$aBoardMatrix = $_SESSION['aBoardMatrix'];
+					//$oTabhandler = new TableHandler($aBoardMatrix);
+					//$aColisionTabs = $oTabhandler->getColidingTabs($sIndex);
+					$sJSONAnswer = Array('status' => 'asdasd');
 					echo json_encode($sJSONAnswer);
 					break;
 }

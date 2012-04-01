@@ -1,5 +1,5 @@
 <?php 
-
+ 
 include('tabhandler.php');
 
 ?>
@@ -32,7 +32,7 @@ include('tabhandler.php');
 	<body>
 		<table width="100%">
 			<?php 
-				foreach($aBoardMatrix as $iRowNr => $aRow)
+				foreach($_SESSION['aBoardMatrix'] as $iRowNr => $aRow)
 				{
 					echo '<tr>';
 					foreach($aRow as $iKey => $sColumn)

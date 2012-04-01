@@ -15,6 +15,7 @@ Class TableHandler{
 		{
 			$oUtils -> UnitTest('0/0');
 		}
+		print_r($aBoardMatrix);
 		$this->aBoardMatrix = $aBoardMatrix;
 	}
 	
@@ -46,13 +47,14 @@ Class TableHandler{
 	
 	function getColidingTabs($sSourcePosition)
 	{
+		return 'bla';exit;
 		// Unit Test & paramcheck
 		if( !$this->_getColisitionSource('0/0') || !$sSourcePosition )
 		{
 			return false;
 		}	
 		$aSourceIndex 		= $this->_getColisitionSource($sSourcePosition);
-		return $this->aBoardMatrix;exit;
+		return $_SESSION['aBoardMatrix'][0][0];exit;
 		$sSourceColor 		= $this->aBoardMatrix[$aSourceIndex['row']][$aSourceIndex['column']];
 		return $sSourceColor;exit;
 		$aDestinationMap	= $this->_getDestinationMap($aSourceIndex,$sSourceColor);

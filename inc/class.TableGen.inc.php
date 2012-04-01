@@ -8,7 +8,6 @@
  * @package flipit
  */
 Class TableGen{
-	
 	private $aBoardMatrix 	= Array(); 	// BoardMap containing colordata of fields
 	
 	private $iBoardSize		= 25;		// BoardSize in fields
@@ -67,6 +66,7 @@ Class TableGen{
 				$this->aBoardMatrix[$iRow][$iColumn] = $this->_rndColor();
 			}
 		}
+		$_SESSION['aBoardMatrix'] = $this->aBoardMatrix;
 	}
 	
 	private function _readConfig($aConfig)

@@ -22,7 +22,7 @@ Class TableHandler{
     private function __getBoardMatrix()
     {
         $aBoardMatrix = false;
-        $this->oDBController->getConnection('root','sonada86','flipit');
+        $this->oDBController->getConnection('root','xxx','flipit');
         $this->oDBController->query('SELECT * FROM actual_board');
         $aBoardMatrix = $this->oDBController->getResult();
         $this->oDBController->error(1,1);

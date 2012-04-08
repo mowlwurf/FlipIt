@@ -1,6 +1,10 @@
-<?php 
- 
-include('tabhandler.php');
+<?php
+
+
+include('inc/class.TableGen.inc.php');
+$oTab = new TableGen(True);
+$aBoardMatrix = $oTab->getBoardMatrix();
+
 
 ?>
 
@@ -32,7 +36,7 @@ include('tabhandler.php');
 	<body>
 		<table width="100%">
 			<?php 
-				foreach($_SESSION['aBoardMatrix'] as $iRowNr => $aRow)
+				foreach($aBoardMatrix as $iRowNr => $aRow)
 				{
 					echo '<tr>';
 					foreach($aRow as $iKey => $sColumn)

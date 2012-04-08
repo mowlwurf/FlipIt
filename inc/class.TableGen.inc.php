@@ -1,5 +1,5 @@
 <?php
-//include_once('class.Utils.inc.php');
+include_once('class.DBController.php');
 //$oUtils = new Utils();
 /**
  * TableGen
@@ -46,6 +46,8 @@ Class TableGen{
 		{
 			$this->_generateBoard();
 		}
+        $this->oDBController = new DbController();
+        $this->__saveBoardMatrix($this->aBoardMatrix);
 	}
 	
 	/** 
@@ -56,7 +58,17 @@ Class TableGen{
 	{
 		return $this->aBoardMatrix;
 	}
-	
+
+    function __saveBoardMatrix($aBoardMatrix)
+    {
+        $sBoardMatrix = serialize($aBoardMatrix);
+        $iBoardSize   = $this->iBoardSize;
+        $iColors      = $this->iColorCount;
+        $this->oDBController->getConnection('root','sonada86','flipit');
+        $this->oDBController->query('INSERT INTO actual_board VALUES (\''.$sBoardMatrix.'\',\''.$iBoardSize.'\',\''.$iColors.'\')');
+        $this->oDBController->clearCache();
+    }
+
 	private function _generateBoard()
 	{
 		for($iRow=0;$iRow<$this->iBoardSize;$iRow++)
@@ -66,7 +78,7 @@ Class TableGen{
 				$this->aBoardMatrix[$iRow][$iColumn] = $this->_rndColor();
 			}
 		}
-		$_SESSION['aBoardMatrix'] = $this->aBoardMatrix;
+		//$_SESSION['aBoardMatrix'] = $this->aBoardMatrix;
 	}
 	
 	private function _readConfig($aConfig)
@@ -84,7 +96,7 @@ Class TableGen{
 	
 	private function _rndColor()
 	{
-		if(!isset($this->iColorCount))	continue;
+		if(!isset($this->iColorCount))	return false;
 		$iRand = rand(0,$this->iColorCount-1);
 		return $this->aColorMap[$iRand];
 	}

@@ -7,7 +7,6 @@ ini_set('display_errors','1');
  * 7 verschiedene Farben
  */
 //nclude('inc/class.Utils.inc.php');
-include('inc/class.TableGen.inc.php');
 include('inc/class.TableHandler.inc.php');
 // optional Param $aConfig 
 // aConfig = Array(
@@ -24,19 +23,7 @@ $sAction = isset($_POST['action']) && trim($_POST['action']) != '' ? $_POST['act
 // index tabpositionhandler
 $sIndex = isset($_POST['index']) && trim($_POST['index']) != '' ? $_POST['index'] : false;
 
-/**
- * Objects
- */
-if(!$sIndex)
-{
-	session_start();
-	$oTab = new TableGen(True);
-	$_SESSION['aBoardMatrix'] = $oTab->getBoardMatrix();
-}
  		
-//$oTab = new TableGen();
-// get generated boardinformations
-
 switch($sAction)
 {
 	default:
@@ -46,10 +33,9 @@ switch($sAction)
 					//$aBoardMatrix = $oTab->getBoardMatrix();
 					break;
 					
-	case 'flip':	$aBoardMatrix = $_SESSION['aBoardMatrix'];
-					//$oTabhandler = new TableHandler($aBoardMatrix);
-					//$aColisionTabs = $oTabhandler->getColidingTabs($sIndex);
-					$sJSONAnswer = Array('status' => 'asdasd');
+	case 'flip':	$oTabhandler = new TableHandler();
+					$aColisionTabs = $oTabhandler->getColidingTabs($sIndex);
+					$sJSONAnswer = Array('status' => $aColisionTabs);
 					echo json_encode($sJSONAnswer);
 					break;
 }

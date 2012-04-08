@@ -1,6 +1,7 @@
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
+include_once('class.DBController.php');
 /**
  * TableHandler
  * berechnet Spielkollisionen und liefert Spielfeldreaktionen
@@ -9,16 +10,26 @@ ini_set('display_errors', 1);
  */
 Class TableHandler{
 	
-	function __construct($aBoardMatrix,$bDebug=false)
+	function __construct($bDebug=false)
 	{
 		if($bDebug)
 		{
-			$oUtils -> UnitTest('0/0');
+			//$oUtils -> UnitTest('0/0');
 		}
-		print_r($aBoardMatrix);
-		$this->aBoardMatrix = $aBoardMatrix;
+        $this->oDBController = new DbController();
 	}
-	
+
+    private function __getBoardMatrix()
+    {
+        $aBoardMatrix = false;
+        $this->oDBController->getConnection('root','sonada86','flipit');
+        $this->oDBController->query('SELECT * FROM actual_board');
+        $aBoardMatrix = $this->oDBController->getResult();
+        $this->oDBController->error(1,1);
+        $this->oDBController->clearCache();
+        return unserialize($aBoardMatrix['board']);
+    }
+
 	//TODO
 	function calcWithString($iInt,$sString)
 	{
@@ -47,18 +58,17 @@ Class TableHandler{
 	
 	function getColidingTabs($sSourcePosition)
 	{
-		return 'bla';exit;
+        $this->aBoardMatrix = $this->__getBoardMatrix();
 		// Unit Test & paramcheck
 		if( !$this->_getColisitionSource('0/0') || !$sSourcePosition )
 		{
 			return false;
-		}	
+		}
 		$aSourceIndex 		= $this->_getColisitionSource($sSourcePosition);
-		return $_SESSION['aBoardMatrix'][0][0];exit;
+        return $this->aBoardMatrix[0][0];exit;
 		$sSourceColor 		= $this->aBoardMatrix[$aSourceIndex['row']][$aSourceIndex['column']];
 		return $sSourceColor;exit;
 		$aDestinationMap	= $this->_getDestinationMap($aSourceIndex,$sSourceColor);
-		print_r($aDestinationMap);
 		if(!is_array($aDestinationMap))
 		{
 			return false;

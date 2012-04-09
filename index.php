@@ -23,16 +23,50 @@ $aBoardMatrix = $oTab->getBoardMatrix();
                 },
                 success: function(rsp)
                 {
-                    alert(rsp.status);
-                    $.each(rsp.data, function(i, v) {
-                        if(v !== null)
-                        {
-                            $('#'+v).show();
-                        }
-                    });
+                    if(rsp.status == 'success')
+                    {
+                        $.each(rsp.data, function(i, v) {
+                            if(v !== null)
+                            {
+                                $('#'+v).show();
+                            }
+                        });
+                    }
+                    else
+                    {
+                        alert('ColorPicker konnte nicht geladen werden.');
+                    }
                 }
             });
         });
+
+        function flip(sColor)
+        {
+            $.ajax({
+                dataType:	'json',
+                type: 		"POST",
+                url: 		'tabhandler.php',
+                data: 		'action=flip&color='+sColor,
+                beforeSend: function( data ) {
+                },
+                success: function(rsp)
+                {
+                    if(rsp.status == 'success')
+                    {
+                        $.each(rsp.data, function(i, v) {
+                            var iRow = v.row == null || v.row == '' ? 0 : v.row;
+                            var iCol = v.col == null || v.col == '' ? 0 : v.col;
+                            var sId  = iRow+'X'+iCol;
+                            $('#'+sId).css('background-color',sColor);
+                        });
+                    }
+                    else
+                    {
+                        alert('Fehler beim Berechnen der Kollision.');
+                    }
+                }
+            });
+        }
 
 		function flipit(iRow,iColumn)
 		{
@@ -42,7 +76,7 @@ $aBoardMatrix = $oTab->getBoardMatrix();
 				dataType:	'json',
 				type: 		"POST",
 				url: 		'tabhandler.php',
-				data: 		'action=flip&index='+index,
+				//data: 		'action=flip&index='+index,
 			 	beforeSend: function( data ) {
 				},
 				success: function(rsp)
@@ -66,7 +100,7 @@ $aBoardMatrix = $oTab->getBoardMatrix();
 					echo '<tr>';
 					foreach($aRow as $iKey => $sColumn)
 					{
-						echo '<td id="'.$iRowNr.'/'.$iKey.'" style="background-color:'.$sColumn.';" onClick="flipit('.$iRowNr.','.$iKey.')">&nbsp;</td>';
+						echo '<td id="'.$iRowNr.'X'.$iKey.'" style="background-color:'.$sColumn.';" onClick="flipit('.$iRowNr.','.$iKey.')">&nbsp;</td>';
 					}
 					echo '</tr>';
 				}		
@@ -75,13 +109,13 @@ $aBoardMatrix = $oTab->getBoardMatrix();
         <table width="100%">
             <tr>
                 <!-- 'red','green','yellow','blue','purple','pink','cyan',-->
-                <td width="50px" height="50px" id="red" style="display:none;background-color:red;">&nbsp;</td>
-                <td width="50px" height="50px" id="green" style="display:none;background-color:green;">&nbsp;</td>
-                <td width="50px" height="50px" id="yellow" style="display:none;background-color:yellow;">&nbsp;</td>
-                <td width="50px" height="50px" id="blue" style="display:none;background-color:blue;">&nbsp;</td>
-                <td width="50px" height="50px" id="purple" style="display:none;background-color:purple;">&nbsp;</td>
-                <td width="50px" height="50px" id="pink" style="display:none;background-color:pink;">&nbsp;</td>
-                <td width="50px" height="50px" id="cyan" style="display:none;background-color:cyan;">&nbsp;</td>
+                <td width="50px" height="50px" id="red" style="display:none;background-color:red;" onclick="flip('red')">&nbsp;</td>
+                <td width="50px" height="50px" id="green" style="display:none;background-color:green;" onclick="flip('green')">&nbsp;</td>
+                <td width="50px" height="50px" id="yellow" style="display:none;background-color:yellow;" onclick="flip('yellow')">&nbsp;</td>
+                <td width="50px" height="50px" id="blue" style="display:none;background-color:blue;" onclick="flip('blue')">&nbsp;</td>
+                <td width="50px" height="50px" id="purple" style="display:none;background-color:purple;" onclick="flip('purple')">&nbsp;</td>
+                <td width="50px" height="50px" id="pink" style="display:none;background-color:pink;" onclick="flip('pink')">&nbsp;</td>
+                <td width="50px" height="50px" id="cyan" style="display:none;background-color:cyan;" onclick="flip('cyan')">&nbsp;</td>
             </tr>
         </table>
 	</body>

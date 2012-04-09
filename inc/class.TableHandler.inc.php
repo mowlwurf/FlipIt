@@ -91,7 +91,7 @@ Class TableHandler{
         return $this->_getAvailableColors();
     }
 
-	function getColidingTabs($sSourcePosition)
+	function getColidingTabs($sSourceColor)
 	{
         $this->aBoardMatrix = $this->__getBoardMatrix();
 		// Unit Test & paramcheck
@@ -99,19 +99,32 @@ Class TableHandler{
 		{
 			//return false;
 		}
-        $this->oLog->log(__FILE__,__FUNCTION__,'process-0 (must be coordinate)',$sSourcePosition);
-		$aSourceIndex 		= $this->_getColisitionSource($sSourcePosition);
-		$this->sSourceColor 		= $this->aBoardMatrix[$aSourceIndex['row']][$aSourceIndex['col']];
-        $this->oLog->log(__FILE__,__FUNCTION__,'process-1 (must be color)',$this->sSourceColor);
-		$aDestinationMap	= $this->_getDestinationMap($aSourceIndex,$this->sSourceColor);
-        $this->oLog->log(__FILE__,__FUNCTION__,'process-2 (must be coordinatesys)',serialize($aDestinationMap));
+        $aPlayerFields      = $this->_getPlayerFields();
+		$aDestinationMap	= $this->_getDestinationMap($aPlayerFields,$sSourceColor);
+        $this->oLog->log(__FILE__,__FUNCTION__,'process-2 (must be coordinatesys)',print_r($aPlayerFields,true));
+        $this->oLog->log(__FILE__,__FUNCTION__,'process-2 (must be sourceclor)',$sSourceColor);
+        $this->oLog->log(__FILE__,__FUNCTION__,'process-2 (must be coordinatesys)',print_r($aDestinationMap,true));
+        $this->_saveDestinationMap($aDestinationMap);
+        foreach($aPlayerFields as $iKey => $aCoords)
+        {
+            $aFields2Draw[$iKey]['row'] = $aCoords[0];
+            $aFields2Draw[$iKey]['col'] = $aCoords[1];
+        }
 		if(!is_array($aDestinationMap))
 		{
 			return false;
 		}
-		return $aDestinationMap;
+		return $aFields2Draw;
 	}
 
+    private function _saveDestinationMap($aDestinationMap)
+    {
+        foreach($aDestinationMap as $iKey => $aValue)
+        {
+            $this->oLog->log(__FILE__,__FUNCTION__,'process-11 (must be colormap)',print_r($aValue,true));
+            $this->_setPlayerField($aValue['row'],$aValue['col']);
+        }
+    }
 
     private function _getAvailableColors()
     {
@@ -137,6 +150,7 @@ Class TableHandler{
         return $aAvailableColors;
     }
 
+    //TODO PlayerClass functions going to be outsourced
     private function _getPlayerFields()
     {
         $this->oDBController->getConnection($this->dbUser,$this->dbPassword,$this->dbName,$this->dbServer);
@@ -144,9 +158,25 @@ Class TableHandler{
         $aJson = $this->oDBController->getResult(); // todo SELECT one statment in dbhandler
         $this->oLog->log(__FILE__,__FUNCTION__,'process-11 (must be colormap)',print_r($aJson,true));
         $aActualPlayerFields=unserialize($aJson[0]['fields_player1']);
+        $this->oLog->log(__FILE__,__FUNCTION__,'process-13 (must be colormap)',print_r($aActualPlayerFields,true));
         return $aActualPlayerFields;
     }
 
+    private function _setPlayerField($iRow,$iCol)
+    {
+        $aActualPlayerFields=$this->_getPlayerFields();
+        if(!is_array($aActualPlayerFields))
+        {
+            $aActualPlayerFields = array('0' => array('0'=>$iRow,'1'=>$iCol));
+        }
+        else
+        {
+            $aActualPlayerFields[] = array('0'=>$iRow,'1'=>$iCol);
+        }
+        $this->oDBController->query('UPDATE '.$this->active_table.' SET `fields_player1` = \''.serialize($aActualPlayerFields).'\'');
+        //$this->oLog->log(__FILE__,__FUNCTION__,'process-10 (must be coordinatesys)',print_r($aActualPlayerFields,true));
+    }
+    // TODO END
 	/**
 	 * <b>_getColisitionSource</b><br/>
 	 * returns array SourceIndex
@@ -169,9 +199,9 @@ Class TableHandler{
 	 * @param array $aSourceIndex
 	 * @param string $sSourceColor
 	 */
-	private function _getDestinationMap($aSourceIndex,$sSourceColor)
+	private function _getDestinationMap($aPlayerFields,$sSourceColor)
 	{
-		$aColidedTabs 	= $this->_setColidingTabs($aSourceIndex);
+		$aColidedTabs 	= $this->_setColidingTabs($aPlayerFields);
 		$aTabs2Flip		= $this->_setFlipingTabs($aColidedTabs,$sSourceColor);
 		return $aTabs2Flip;
 	}
@@ -190,21 +220,27 @@ Class TableHandler{
 		return $aFlipingTabs;
 	}
 	
-	private function _setColidingTabs($aSourceIndex)
+	private function _setColidingTabs($aPlayerFields)
 	{
 		$aColidingTabIndex= array();
 		$i = 0;
-		foreach($this->aColidingMethric as $sDirection => $sColidisionInfo)
-		{
-			$aColision = explode('/',$sColidisionInfo);
-			$aColidingTabIndex[$i]['row'] 	= $aColision[0] == 0 ? $aSourceIndex['row'] 	: $this->calcWithString($aSourceIndex['row'],$aColision[0]);
-			$aColidingTabIndex[$i]['col'] 	= $aColision[1] == 0 ? $aSourceIndex['col']     : $this->calcWithString($aSourceIndex['col'],$aColision[1]);
-            $sLog = $aColision[0] == 0 ?  'r'.$aSourceIndex['row'] 	: $this->calcWithString($aSourceIndex['row'],$aColision[0]);
-            $sLog .= '-';
-            $sLog .= $aColision[1] == 0 ? 'r'.$aSourceIndex['col']  : $this->calcWithString($aSourceIndex['col'],$aColision[1]);
-                $this->oLog->log(__FILE__,__FUNCTION__,'process-4 (must be coordinatesys)',$sLog);
-            $i++;
-		}
+        $this->oLog->log(__FILE__,__FUNCTION__,'process-4 (must be coordinatesys)',print_r($aPlayerFields,true));
+        foreach($aPlayerFields as $iKey => $aCoords)
+        {
+            foreach($this->aColidingMethric as $sDirection => $sColidisionInfo)
+            {
+                $aColision = explode('/',$sColidisionInfo);
+                $iRow      = trim($aCoords[0]) == '' ? 0 : $aCoords[0];
+                $iCol      = trim($aCoords[1]) == '' ? 0 : $aCoords[1];
+                $aColidingTabIndex[$i]['row'] 	= $aColision[0] == 0 ? $iRow : $this->calcWithString($iRow,$aColision[0]);
+                $aColidingTabIndex[$i]['col'] 	= $aColision[1] == 0 ? $iCol : $this->calcWithString($iCol,$aColision[1]);
+                $sLog = $aColision[0] == 0 ?  'r'.$iRow : $this->calcWithString($iRow,$aColision[0]);
+                $sLog .= '-';
+                $sLog .= $aColision[1] == 0 ? 'r'.$iCol : $this->calcWithString($iCol,$aColision[1]);
+                    $this->oLog->log(__FILE__,__FUNCTION__,'process-4 (must be coordinatesys)',$sLog);
+                $i++;
+            }
+        }
 		return $aColidingTabIndex;
 	}
 }

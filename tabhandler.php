@@ -22,7 +22,7 @@ include('inc/class.TableHandler.inc.php');
 // action dispatcher control
 $sAction = isset($_POST['action']) && trim($_POST['action']) != '' ? $_POST['action'] : false;
 // index tabpositionhandler
-$sIndex = isset($_POST['index']) && trim($_POST['index']) != '' ? $_POST['index'] : false;
+$sColor = isset($_POST['color']) && trim($_POST['color']) != '' ? $_POST['color'] : false;
 
 $oLog = new LogDoc();
  		
@@ -41,11 +41,9 @@ switch($sAction)
 	case 'flip':
     {
         $oTabhandler = new TableHandler();
-        $aColisionTabs = $oTabhandler->getColidingTabs($sIndex);
-        $sSourceColor  = $oTabhandler->getSourceColor();
+        $aColisionTabs = $oTabhandler->getColidingTabs($sColor);
         $oLog->log(__FILE__,__FUNCTION__,'process-99 (must be coordinate)',print_r($aColisionTabs,true));
-        $sAnswer = $aColisionTabs[0]['row'].'/'.$aColisionTabs[0]['col'];
-        $sJSONAnswer = Array('status' => 'success','sourcecolor' => $sSourceColor,'data' => $aColisionTabs);
+        $sJSONAnswer = Array('status' => 'success','data' => $aColisionTabs);
         echo json_encode($sJSONAnswer);
         break;
     }

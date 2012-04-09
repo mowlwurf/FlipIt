@@ -29,14 +29,22 @@ switch($sAction)
 {
 	default:
 	case false:		break;
-					
-	case 'flip':	$oTabhandler = new TableHandler();
-					$aColisionTabs = $oTabhandler->getColidingTabs($sIndex);
-                    $oLog->log(__FILE__,__FUNCTION__,'process-99 (must be coordinate)',print_r($aColisionTabs,true));
-                    $sAnswer = $aColisionTabs[0]['row'].'/'.$aColisionTabs[0]['col'];
-					$sJSONAnswer = Array('status' => 'success','data' => $aColisionTabs);
-					echo json_encode($sJSONAnswer);
-					break;
+	case 'colorswitcher':
+    {
+        //$oTabhandler   = new TableHandler();
+        //$aColors2Chose = $oTabhandler->getColorSwitcher();
+    }
+	case 'flip':
+    {
+        $oTabhandler = new TableHandler();
+        $aColisionTabs = $oTabhandler->getColidingTabs($sIndex);
+        $sSourceColor  = $oTabhandler->getSourceColor();
+        $oLog->log(__FILE__,__FUNCTION__,'process-99 (must be coordinate)',print_r($aColisionTabs,true));
+        $sAnswer = $aColisionTabs[0]['row'].'/'.$aColisionTabs[0]['col'];
+        $sJSONAnswer = Array('status' => 'success','sourcecolor' => $sSourceColor,'data' => $aColisionTabs);
+        echo json_encode($sJSONAnswer);
+        break;
+    }
 }
 
 

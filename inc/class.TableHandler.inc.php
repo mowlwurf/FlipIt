@@ -9,9 +9,16 @@
  */
 Class TableHandler{
 
-    private $oDbController = false;
+    private $oDbController    = false;
 
-    private $aBoardMatrix  = array();
+    private $aBoardMatrix     = array();
+
+    private $aColidingMethric = array(
+                                        'West' 	=> '0/-1',
+                                        'North'	=> '+1/0',
+                                        'East'	=> '0/+1',
+                                        'South' => '-1/0'
+                                );
 
 	function __construct($bDebug=false)
 	{
@@ -22,6 +29,7 @@ Class TableHandler{
         }
         include('cnf/config.inc.php');
         $this->_readConfig($aConfig);
+        $this->aBoardMatrix = $this->__getBoardMatrix();
 	}
 
     private function _readConfig($aConfig)
@@ -48,7 +56,11 @@ Class TableHandler{
         return unserialize($aBoardMatrix[0]['board']);
     }
 
-	//TODO
+    function getSourceColor()
+    {
+        return $this->sSourceColor;
+    }
+
 	function calcWithString($iInt,$sString)
 	{
 		$aOperatorMap = Array('+','-');
@@ -72,7 +84,13 @@ Class TableHandler{
         }
 		return false;
 	}
-	
+
+    function getColorSwitcher()
+    {
+        $this->aBoardMatrix     = $this->__getBoardMatrix();
+        $this->aColorsAvailable = $this->_getAvailableColors();
+    }
+
 	function getColidingTabs($sSourcePosition)
 	{
         $this->aBoardMatrix = $this->__getBoardMatrix();
@@ -83,9 +101,9 @@ Class TableHandler{
 		}
         $this->oLog->log(__FILE__,__FUNCTION__,'process-0 (must be coordinate)',$sSourcePosition);
 		$aSourceIndex 		= $this->_getColisitionSource($sSourcePosition);
-		$sSourceColor 		= $this->aBoardMatrix[$aSourceIndex['row']][$aSourceIndex['col']];
-        $this->oLog->log(__FILE__,__FUNCTION__,'process-1 (must be color)',$sSourceColor);
-		$aDestinationMap	= $this->_getDestinationMap($aSourceIndex,$sSourceColor);
+		$this->sSourceColor 		= $this->aBoardMatrix[$aSourceIndex['row']][$aSourceIndex['col']];
+        $this->oLog->log(__FILE__,__FUNCTION__,'process-1 (must be color)',$this->sSourceColor);
+		$aDestinationMap	= $this->_getDestinationMap($aSourceIndex,$this->sSourceColor);
         $this->oLog->log(__FILE__,__FUNCTION__,'process-2 (must be coordinatesys)',serialize($aDestinationMap));
 		if(!is_array($aDestinationMap))
 		{
@@ -93,6 +111,20 @@ Class TableHandler{
 		}
 		return $aDestinationMap;
 	}
+
+    private function _getAvailableColors()
+    {
+        $aAvailableColors = Array();
+        foreach($this->aColidingMethric as $sDirection => $sConnectingInfo)
+        {
+            $aConnecting                = explode('/',$sConnectingInfo);
+            $aConnectingTabIndex['row'] = $aConnecting[0] == 0 ? $aSourceIndex['row'] 	: $this->calcWithString($aSourceIndex['row'],$aConnecting[0]);
+            $aConnectingTabIndex['col'] = $aConnecting[1] == 0 ? $aSourceIndex['col']   : $this->calcWithString($aSourceIndex['col'],$aConnecting[1]);
+            $aAvailableColors[] = $this->aBoardMatrix[$aConnectingTabIndex['row']][$aConnectingTabIndex['col']];
+        }
+        $this->oLog->log(__FILE__,__FUNCTION__,'process-2 (must be coordinatesys)',serialize($aAvailableColors));
+        return $aAvailableColors;
+    }
 
 	/**
 	 * <b>_getColisitionSource</b><br/>
@@ -140,14 +172,8 @@ Class TableHandler{
 	private function _setColidingTabs($aSourceIndex)
 	{
 		$aColidingTabIndex= array();
-		$aColidingMethric = array(
-				'West' 	=> '0/-1',
-				'North'	=> '+1/0',
-				'East'	=> '0/+1',
-				'South' => '-1/0'
-		);
 		$i = 0;
-		foreach($aColidingMethric as $sDirection => $sColidisionInfo)
+		foreach($this->aColidingMethric as $sDirection => $sColidisionInfo)
 		{
 			$aColision = explode('/',$sColidisionInfo);
 			$aColidingTabIndex[$i]['row'] 	= $aColision[0] == 0 ? $aSourceIndex['row'] 	: $this->calcWithString($aSourceIndex['row'],$aColision[0]);

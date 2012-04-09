@@ -2,6 +2,7 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 include_once('class.DBController.php');
+
 /**
  * TableHandler
  * berechnet Spielkollisionen und liefert Spielfeldreaktionen
@@ -9,25 +10,29 @@ include_once('class.DBController.php');
  * @package flipit
  */
 Class TableHandler{
-	
+
+    private $oDbController = false;
+
+    private $aBoardMatrix  = array();
+
 	function __construct($bDebug=false)
 	{
 		if($bDebug)
 		{
 			//$oUtils -> UnitTest('0/0');
 		}
-        $this->oDBController = new DbController();
+        $this->oLog = new LogDoc();
 	}
 
     private function __getBoardMatrix()
     {
         $aBoardMatrix = false;
-        $this->oDBController->getConnection('root','xxx','flipit');
+        $this->oDBController = new DbController();
+        $this->oDBController->getConnection('root','sonada86','flipit');
         $this->oDBController->query('SELECT * FROM actual_board');
         $aBoardMatrix = $this->oDBController->getResult();
-        $this->oDBController->error(1,1);
         $this->oDBController->clearCache();
-        return unserialize($aBoardMatrix['board']);
+        return unserialize($aBoardMatrix[0]['board']);
     }
 
 	//TODO
@@ -35,24 +40,23 @@ Class TableHandler{
 	{
 		$aOperatorMap = Array('+','-');
 		foreach($aOperatorMap as $sOperator)
-		{
-			$iValue = str_replace($sOperator, '', $sString);
-			if(is_numeric($iValue))
-			{
-				switch($sOperator)
-				{
-					case '+': 	return $iInt + $iValue;
-								break;
-					case '-': 	return $iInt - $iValue;
-								break;
-				}
-			}
+		{   if(strpos($sString,$sOperator) !== false)
+            {
+                $aTmp = explode($sOperator,$sString);
+            }
+            if(is_array($aTmp) && trim($aTmp[1]) != '')
+            {
+                break;
+            }
 		}
-				
-		if(is_numeric($iInt+$sString))
-		{
-			return $iInt+$sString;
-		}
+
+        switch($sOperator)
+        {
+            case '+': return $iInt+$aTmp[1];
+                      break;
+            case '-': return $iInt-$aTmp[1];
+                      break;
+        }
 		return false;
 	}
 	
@@ -60,15 +64,16 @@ Class TableHandler{
 	{
         $this->aBoardMatrix = $this->__getBoardMatrix();
 		// Unit Test & paramcheck
-		if( !$this->_getColisitionSource('0/0') || !$sSourcePosition )
+		//if( !$this->_getColisitionSource('0/0') || !$sSourcePosition )
 		{
-			return false;
+			//return false;
 		}
+        $this->oLog->log(__FILE__,__FUNCTION__,'process-0 (must be coordinate)',$sSourcePosition);
 		$aSourceIndex 		= $this->_getColisitionSource($sSourcePosition);
-        return $this->aBoardMatrix[0][0];exit;
-		$sSourceColor 		= $this->aBoardMatrix[$aSourceIndex['row']][$aSourceIndex['column']];
-		return $sSourceColor;exit;
+		$sSourceColor 		= $this->aBoardMatrix[$aSourceIndex['row']][$aSourceIndex['col']];
+        $this->oLog->log(__FILE__,__FUNCTION__,'process-1 (must be color)',$sSourceColor);
 		$aDestinationMap	= $this->_getDestinationMap($aSourceIndex,$sSourceColor);
+        $this->oLog->log(__FILE__,__FUNCTION__,'process-2 (must be coordinatesys)',serialize($aDestinationMap));
 		if(!is_array($aDestinationMap))
 		{
 			return false;
@@ -109,8 +114,11 @@ Class TableHandler{
 	{
 		foreach($aColidedTabs as $iKey => $aTabInfo)
 		{
-			if($sSourceColor !== $this->aBoardmatrix[$aTabInfo['row']][$aTabInfo['col']])
+            $this->oLog->log(__FILE__,__FUNCTION__,'process-5 (must be coordinate)',$aTabInfo['row'].'/'.$aTabInfo['col']);
+            $this->oLog->log(__FILE__,__FUNCTION__,'process-6 (must be color)',$sSourceColor.' == '.$this->aBoardMatrix[$aTabInfo['row']][$aTabInfo['col']]);
+			if($sSourceColor !== $this->aBoardMatrix[$aTabInfo['row']][$aTabInfo['col']])
 			{
+                $this->oLog->log(__FILE__,__FUNCTION__,'process-6.2 (must be bool)','TRUE');
 				unset($aColidedTabs[$iKey]);
 			}
 		}
@@ -126,12 +134,17 @@ Class TableHandler{
 				'East'	=> '0/+1',
 				'South' => '-1/0'
 		);
-		
+		$i = 0;
 		foreach($aColidingMethric as $sDirection => $sColidisionInfo)
 		{
 			$aColision = explode('/',$sColidisionInfo);
-			$aColidingTabIndex[]['row'] 	= $aColision[0] !== 0 ? $aSourceIndex['row'] 	: $this->calcWithString($aSourceIndex['row'],$aColision[0]);
-			$aColidingTabIndex[]['col'] 	= $aColision[1] !== 0 ? $aSourceIndex['column'] : $this->calcWithString($aSourceIndex['column'],$aColision[0]);					
+			$aColidingTabIndex[$i]['row'] 	= $aColision[0] == 0 ? $aSourceIndex['row'] 	: $this->calcWithString($aSourceIndex['row'],$aColision[0]);
+			$aColidingTabIndex[$i]['col'] 	= $aColision[1] == 0 ? $aSourceIndex['col']     : $this->calcWithString($aSourceIndex['col'],$aColision[1]);
+            $sLog = $aColision[0] == 0 ?  'r'.$aSourceIndex['row'] 	: $this->calcWithString($aSourceIndex['row'],$aColision[0]);
+            $sLog .= '-';
+            $sLog .= $aColision[1] == 0 ? 'r'.$aSourceIndex['col']  : $this->calcWithString($aSourceIndex['col'],$aColision[1]);
+                $this->oLog->log(__FILE__,__FUNCTION__,'process-4 (must be coordinatesys)',$sLog);
+            $i++;
 		}
 		return $aColidingTabIndex;
 	}

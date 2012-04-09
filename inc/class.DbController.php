@@ -112,7 +112,6 @@ Class DbController{
 		$sType = substr($sQueryString,0,6);
 		switch($sType)
 		{
-			default:
 			case 'SELECT': 
 			{
 				$rRes = mysql_query($sQueryString,$this->rConnection);
@@ -136,7 +135,12 @@ Class DbController{
 				$rRes = mysql_query(mysql_real_escape_string($sQueryString),$this->rConnection) or die($this->_check());
 				($rRes) ? $this->_setResultCount($rRes,$this->rConnection) : $this->_check();
 				break;
-			}	
+			}
+            default:
+            {
+                $rRes = mysql_query($sQueryString,$this->rConnection);
+                break;
+            }
 		}
 		$this->_check();
 	}

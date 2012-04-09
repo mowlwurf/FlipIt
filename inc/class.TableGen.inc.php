@@ -1,5 +1,5 @@
 <?php
-include_once('class.DBController.php');
+//include_once('class.DBController.php');
 //$oUtils = new Utils();
 /**
  * TableGen
@@ -65,6 +65,8 @@ Class TableGen{
         $iBoardSize   = $this->iBoardSize;
         $iColors      = $this->iColorCount;
         $this->oDBController->getConnection('root','sonada86','flipit');
+        //TRUNCATE TABLE  `actual_board`
+        $this->oDBController->query('TRUNCATE TABLE  `actual_board`');
         $this->oDBController->query('INSERT INTO actual_board VALUES (\''.$sBoardMatrix.'\',\''.$iBoardSize.'\',\''.$iColors.'\')');
         $this->oDBController->clearCache();
     }

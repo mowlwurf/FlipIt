@@ -1,11 +1,16 @@
 <?php
 
-
+include('inc/class.DBController.php');
 include('inc/class.TableGen.inc.php');
 $oTab = new TableGen(True);
+$oDBController = new DbController();
 $aBoardMatrix = $oTab->getBoardMatrix();
-
-
+$oDBController->getConnection('root','sonada86','flipit');
+$oDBController->query('SELECT * FROM actual_board');
+$aBoardMatrixTest = $oDBController->getResult();
+$oDBController->clearCache();
+$test =unserialize($aBoardMatrixTest[0]['board']);
+print_r($test[0][0]);
 ?>
 
 <html>

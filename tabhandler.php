@@ -7,6 +7,7 @@ ini_set('display_errors','1');
  * 7 verschiedene Farben
  */
 //nclude('inc/class.Utils.inc.php');
+include('inc/class.LogDoc.inc.php');
 include('inc/class.TableHandler.inc.php');
 // optional Param $aConfig 
 // aConfig = Array(
@@ -23,6 +24,7 @@ $sAction = isset($_POST['action']) && trim($_POST['action']) != '' ? $_POST['act
 // index tabpositionhandler
 $sIndex = isset($_POST['index']) && trim($_POST['index']) != '' ? $_POST['index'] : false;
 
+$oLog = new LogDoc();
  		
 switch($sAction)
 {
@@ -35,7 +37,9 @@ switch($sAction)
 					
 	case 'flip':	$oTabhandler = new TableHandler();
 					$aColisionTabs = $oTabhandler->getColidingTabs($sIndex);
-					$sJSONAnswer = Array('status' => $aColisionTabs);
+                    $oLog->log(__FILE__,__FUNCTION__,'process-99 (must be coordinate)',print_r($aColisionTabs));
+                    $sAnswer = $aColisionTabs[1]['row'].'/'.$aColisionTabs[1]['col'];
+					$sJSONAnswer = Array('status' => $sAnswer);
 					echo json_encode($sJSONAnswer);
 					break;
 }

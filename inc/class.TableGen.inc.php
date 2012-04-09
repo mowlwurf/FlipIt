@@ -1,6 +1,6 @@
 <?php
-//include_once('class.DBController.php');
-//$oUtils = new Utils();
+
+//
 /**
  * TableGen
  * generiert Spielfeld
@@ -38,10 +38,15 @@ Class TableGen{
 	
 	function __construct($bGenerate = False,$aConfig = Array())
 	{
-		if(!$this->is_empty($aConfig))
+  		if(!$this->is_empty($aConfig))
 		{
 			$this->_readConfig($aConfig);
 		}
+        else
+        {
+            include('cnf/config.inc.php');
+            $this->_readConfig($aConfig);
+        }
 		if($bGenerate)
 		{
 			$this->_generateBoard();
@@ -64,9 +69,9 @@ Class TableGen{
         $sBoardMatrix = serialize($aBoardMatrix);
         $iBoardSize   = $this->iBoardSize;
         $iColors      = $this->iColorCount;
-        $this->oDBController->getConnection('root','sonada86','flipit');
+        $this->oDBController->getConnection($this->dbUser,$this->dbPassword,$this->dbName,$this->dbServer);
         //TRUNCATE TABLE  `actual_board`
-        $this->oDBController->query('TRUNCATE TABLE  `actual_board`');
+        $this->oDBController->query('TRUNCATE TABLE '.$this->active_table);
         $this->oDBController->query('INSERT INTO actual_board VALUES (\''.$sBoardMatrix.'\',\''.$iBoardSize.'\',\''.$iColors.'\')');
         $this->oDBController->clearCache();
     }

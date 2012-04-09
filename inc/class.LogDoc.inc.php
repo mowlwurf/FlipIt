@@ -7,9 +7,11 @@ Class LogDoc{
      */
     function __construct()
     {
+        include('cnf/config.inc.php');
+        $this->_readConfig($aConfig);
         $this->oDBController = new DbController();
-        $this->oDBController->getConnection('root','sonada86','flipit');
-        $this->oDBController->query('Truncate Table log');
+        $this->oDBController->getConnection($this->dbUser,$this->dbPassword,$this->dbName,$this->dbServer);
+        $this->oDBController->query('Truncate Table '.$this->log_table);
     }
 
 	/**
@@ -21,10 +23,21 @@ Class LogDoc{
 	 */
 	function log($sSourceFile,$sFunction,$sType,$sLogMessage)
 	{
-        $this->oDBController = new DbController();
-        $this->oDBController->getConnection('root','sonada86','flipit');
-        $this->oDBController->query('INSERT INTO log (`file`,`type`,`function`,`message`) VALUES (\''.mysql_real_escape_string($sSourceFile).'\',\''.$sType.'\',\''.$sFunction.'\',\''.$sLogMessage.'\')');
+        $this->oDBController->getConnection($this->dbUser,$this->dbPassword,$this->dbName,$this->dbServer);
+        $this->oDBController->query('INSERT INTO '.$this->log_table.' (`file`,`type`,`function`,`message`) VALUES (\''.mysql_real_escape_string($sSourceFile).'\',\''.$sType.'\',\''.$sFunction.'\',\''.$sLogMessage.'\')');
         $this->oDBController->clearCache();
 	}
 
+    private function _readConfig($aConfig)
+    {
+        if(!is_array($aConfig))
+        {
+            return false;
+        }
+        foreach($aConfig as $sKey => $sValue)
+        {
+            $this->$sKey = $sValue;
+        }
+        return true;
+    }
 }

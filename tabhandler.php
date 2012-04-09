@@ -6,7 +6,6 @@ ini_set('display_errors','1');
  * 
  * 7 verschiedene Farben
  */
-//nclude('inc/class.Utils.inc.php');
 include('inc/class.LogDoc.inc.php');
 include('inc/class.TableHandler.inc.php');
 // optional Param $aConfig 

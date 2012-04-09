@@ -1,7 +1,5 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-include_once('class.DBController.php');
+
 
 /**
  * TableHandler
@@ -17,19 +15,34 @@ Class TableHandler{
 
 	function __construct($bDebug=false)
 	{
-		if($bDebug)
-		{
-			//$oUtils -> UnitTest('0/0');
-		}
         $this->oLog = new LogDoc();
+        if($bDebug)
+        {
+            //$oUtils -> UnitTest('0/0');
+        }
+        include('cnf/config.inc.php');
+        $this->_readConfig($aConfig);
 	}
+
+    private function _readConfig($aConfig)
+    {
+        if(!is_array($aConfig))
+        {
+            return false;
+        }
+        foreach($aConfig as $sKey => $sValue)
+        {
+            $this->$sKey = $sValue;
+        }
+        return true;
+    }
 
     private function __getBoardMatrix()
     {
         $aBoardMatrix = false;
         $this->oDBController = new DbController();
-        $this->oDBController->getConnection('root','sonada86','flipit');
-        $this->oDBController->query('SELECT * FROM actual_board');
+        $this->oDBController->getConnection($this->dbUser,$this->dbPassword,$this->dbName,$this->dbServer);
+        $this->oDBController->query('SELECT * FROM '.$this->active_table);
         $aBoardMatrix = $this->oDBController->getResult();
         $this->oDBController->clearCache();
         return unserialize($aBoardMatrix[0]['board']);

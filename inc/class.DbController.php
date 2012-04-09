@@ -23,7 +23,7 @@ Class DbController{
 	
 	private function _mysqlconnect($sServer,$sUser,$sPass,$sDb){
 		$this->rConnection = mysql_connect($sServer,$sUser,$sPass);
-		mysql_select_db('flipit',$this->rConnection);
+		mysql_select_db($sDb,$this->rConnection);
 		$this->_check();
 		return ($this->rConnection !== TRUE || $this->rConnection !== FALSE) ?	true : false;
 	}

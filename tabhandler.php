@@ -1,6 +1,6 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors','1');
+//error_reporting(E_ALL);
+//ini_set('display_errors','1');
 /**
  * Spielfeld 25*25 Felder
  * 
@@ -28,17 +28,13 @@ $oLog = new LogDoc();
 switch($sAction)
 {
 	default:
-	case false:		// initialise TableGen with optional Config
-					//$oTab = new TableGen(True);
-					//get generated boardinformations
-					//$aBoardMatrix = $oTab->getBoardMatrix();
-					break;
+	case false:		break;
 					
 	case 'flip':	$oTabhandler = new TableHandler();
 					$aColisionTabs = $oTabhandler->getColidingTabs($sIndex);
-                    $oLog->log(__FILE__,__FUNCTION__,'process-99 (must be coordinate)',print_r($aColisionTabs));
-                    $sAnswer = $aColisionTabs[1]['row'].'/'.$aColisionTabs[1]['col'];
-					$sJSONAnswer = Array('status' => $sAnswer);
+                    $oLog->log(__FILE__,__FUNCTION__,'process-99 (must be coordinate)',print_r($aColisionTabs,true));
+                    $sAnswer = $aColisionTabs[0]['row'].'/'.$aColisionTabs[0]['col'];
+					$sJSONAnswer = Array('status' => 'success','data' => $aColisionTabs);
 					echo json_encode($sJSONAnswer);
 					break;
 }

@@ -24,8 +24,12 @@ $aBoardMatrix = $oTab->getBoardMatrix();
 				},
 				success: function(rsp)
 				{
-					//var data = eval('(' + rsp + ')');
 					alert(rsp.status);
+                    $.each(rsp.data, function(i, v) {
+                        $.each(v, function(index, value) {
+                            alert(index + ': ' + value);
+                        });
+                    });
 				}
 			});
 		}

@@ -129,13 +129,12 @@ Class TableHandler{
 		{
             $this->oLog->log(__FILE__,__FUNCTION__,'process-5 (must be coordinate)',$aTabInfo['row'].'/'.$aTabInfo['col']);
             $this->oLog->log(__FILE__,__FUNCTION__,'process-6 (must be color)',$sSourceColor.' == '.$this->aBoardMatrix[$aTabInfo['row']][$aTabInfo['col']]);
-			if($sSourceColor !== $this->aBoardMatrix[$aTabInfo['row']][$aTabInfo['col']])
+			if($sSourceColor == $this->aBoardMatrix[$aTabInfo['row']][$aTabInfo['col']])
 			{
-                $this->oLog->log(__FILE__,__FUNCTION__,'process-6.2 (must be bool)','TRUE');
-				unset($aColidedTabs[$iKey]);
+                $aFlipingTabs[] = $aColidedTabs[$iKey];
 			}
 		}
-		return $aColidedTabs;
+		return $aFlipingTabs;
 	}
 	
 	private function _setColidingTabs($aSourceIndex)

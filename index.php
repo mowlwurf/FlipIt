@@ -14,6 +14,11 @@ $aBoardMatrix = $oTab->getBoardMatrix();
 		<script src="js/jquery-1.7.2.min.js"></script>
 		<script type="text/javascript">
         $(document).ready(function() {
+            reloadColorSwitcher();
+        });
+
+        function reloadColorSwitcher()
+        {
             $.ajax({
                 dataType:	'json',
                 type: 		"POST",
@@ -38,7 +43,7 @@ $aBoardMatrix = $oTab->getBoardMatrix();
                     }
                 }
             });
-        });
+        }
 
         function flip(sColor)
         {
@@ -66,6 +71,7 @@ $aBoardMatrix = $oTab->getBoardMatrix();
                     }
                 }
             });
+            reloadColorSwitcher();
         }
 
 		function flipit(iRow,iColumn)

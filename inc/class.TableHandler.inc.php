@@ -23,6 +23,7 @@ Class TableHandler{
 	function __construct($bDebug=false)
 	{
         $this->oLog = new LogDoc();
+        $this->oDBController = new DbController();
         if($bDebug)
         {
             //$oUtils -> UnitTest('0/0');
@@ -48,7 +49,6 @@ Class TableHandler{
     private function __getBoardMatrix()
     {
         $aBoardMatrix = false;
-        $this->oDBController = new DbController();
         $this->oDBController->getConnection($this->dbUser,$this->dbPassword,$this->dbName,$this->dbServer);
         $this->oDBController->query('SELECT * FROM '.$this->active_table);
         $aBoardMatrix = $this->oDBController->getResult();
@@ -88,7 +88,7 @@ Class TableHandler{
     function getColorSwitcher()
     {
         $this->aBoardMatrix     = $this->__getBoardMatrix();
-        $this->aColorsAvailable = $this->_getAvailableColors();
+        return $this->_getAvailableColors();
     }
 
 	function getColidingTabs($sSourcePosition)
@@ -112,18 +112,39 @@ Class TableHandler{
 		return $aDestinationMap;
 	}
 
+
     private function _getAvailableColors()
     {
+        $aPlayerFields    = $this->_getPlayerFields();
+        $this->oLog->log(__FILE__,__FUNCTION__,'process-11 (must be colormap)',print_r($aPlayerFields,true));
         $aAvailableColors = Array();
-        foreach($this->aColidingMethric as $sDirection => $sConnectingInfo)
+        foreach($aPlayerFields as $iFieldNr => $aCoords)
         {
-            $aConnecting                = explode('/',$sConnectingInfo);
-            $aConnectingTabIndex['row'] = $aConnecting[0] == 0 ? $aSourceIndex['row'] 	: $this->calcWithString($aSourceIndex['row'],$aConnecting[0]);
-            $aConnectingTabIndex['col'] = $aConnecting[1] == 0 ? $aSourceIndex['col']   : $this->calcWithString($aSourceIndex['col'],$aConnecting[1]);
-            $aAvailableColors[] = $this->aBoardMatrix[$aConnectingTabIndex['row']][$aConnectingTabIndex['col']];
+            $aCoords[0] = trim($aCoords[0]) == '' ? 0 : $aCoords[0];
+            $aCoords[1] = trim($aCoords[1]) == '' ? 0 : $aCoords[1];
+            foreach($this->aColidingMethric as $sDirection => $sConnectingInfo)
+            {
+                $aConnecting                = explode('/',$sConnectingInfo);
+                $aConnectingTabIndex['row'] = $aConnecting[0] == 0 ? $aCoords[0] 	: $this->calcWithString($aCoords[0],$aConnecting[0]);
+                $aConnectingTabIndex['col'] = $aConnecting[1] == 0 ? $aCoords[1]    : $this->calcWithString($aCoords[1],$aConnecting[1]);
+                if(!in_array($this->aBoardMatrix[$aConnectingTabIndex['row']][$aConnectingTabIndex['col']],$aAvailableColors))
+                {
+                    $aAvailableColors[] = $this->aBoardMatrix[$aConnectingTabIndex['row']][$aConnectingTabIndex['col']];
+                }
+            }
         }
-        $this->oLog->log(__FILE__,__FUNCTION__,'process-2 (must be coordinatesys)',serialize($aAvailableColors));
+        $this->oLog->log(__FILE__,__FUNCTION__,'process-12 (must be colormap)',serialize($aAvailableColors));
         return $aAvailableColors;
+    }
+
+    private function _getPlayerFields()
+    {
+        $this->oDBController->getConnection($this->dbUser,$this->dbPassword,$this->dbName,$this->dbServer);
+        $this->oDBController->query('SELECT `fields_player1` FROM '.$this->active_table);
+        $aJson = $this->oDBController->getResult(); // todo SELECT one statment in dbhandler
+        $this->oLog->log(__FILE__,__FUNCTION__,'process-11 (must be colormap)',print_r($aJson,true));
+        $aActualPlayerFields=unserialize($aJson[0]['fields_player1']);
+        return $aActualPlayerFields;
     }
 
 	/**

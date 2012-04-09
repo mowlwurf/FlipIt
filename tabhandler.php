@@ -6,6 +6,7 @@
  * 
  * 7 verschiedene Farben
  */
+include('inc/class.DBController.php');
 include('inc/class.LogDoc.inc.php');
 include('inc/class.TableHandler.inc.php');
 // optional Param $aConfig 
@@ -31,8 +32,11 @@ switch($sAction)
 	case false:		break;
 	case 'colorswitcher':
     {
-        //$oTabhandler   = new TableHandler();
-        //$aColors2Chose = $oTabhandler->getColorSwitcher();
+        $oTabhandler   = new TableHandler();
+        $aColors2Chose = $oTabhandler->getColorSwitcher();
+        $sJSONAnswer = Array('status' => 'success','data' => $aColors2Chose);
+        echo json_encode($sJSONAnswer);
+        break;
     }
 	case 'flip':
     {

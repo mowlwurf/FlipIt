@@ -1,5 +1,5 @@
 <?php
-include_once('class.DBController.php');
+
 Class LogDoc{
 
     /**

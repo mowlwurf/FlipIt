@@ -72,7 +72,7 @@ Class TableGen{
         $this->oDBController->getConnection($this->dbUser,$this->dbPassword,$this->dbName,$this->dbServer);
         //TRUNCATE TABLE  `actual_board`
         $this->oDBController->query('TRUNCATE TABLE '.$this->active_table);
-        $this->oDBController->query('INSERT INTO actual_board VALUES (\''.$sBoardMatrix.'\',\''.$iBoardSize.'\',\''.$iColors.'\')');
+        $this->oDBController->query('INSERT INTO '.$this->active_table.' VALUES (\''.$sBoardMatrix.'\',\'\',\''.$iBoardSize.'\',\''.$iColors.'\')');
         $this->oDBController->clearCache();
     }
 

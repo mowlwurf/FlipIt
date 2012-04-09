@@ -24,6 +24,12 @@ $aBoardMatrix = $oTab->getBoardMatrix();
                 success: function(rsp)
                 {
                     alert(rsp.status);
+                    $.each(rsp.data, function(i, v) {
+                        if(v !== null)
+                        {
+                            $('#'+v).show();
+                        }
+                    });
                 }
             });
         });
@@ -67,7 +73,16 @@ $aBoardMatrix = $oTab->getBoardMatrix();
 			?>
 		</table>
         <table width="100%">
-
+            <tr>
+                <!-- 'red','green','yellow','blue','purple','pink','cyan',-->
+                <td width="50px" height="50px" id="red" style="display:none;background-color:red;">&nbsp;</td>
+                <td width="50px" height="50px" id="green" style="display:none;background-color:green;">&nbsp;</td>
+                <td width="50px" height="50px" id="yellow" style="display:none;background-color:yellow;">&nbsp;</td>
+                <td width="50px" height="50px" id="blue" style="display:none;background-color:blue;">&nbsp;</td>
+                <td width="50px" height="50px" id="purple" style="display:none;background-color:purple;">&nbsp;</td>
+                <td width="50px" height="50px" id="pink" style="display:none;background-color:pink;">&nbsp;</td>
+                <td width="50px" height="50px" id="cyan" style="display:none;background-color:cyan;">&nbsp;</td>
+            </tr>
         </table>
 	</body>
 </html>

@@ -110,12 +110,29 @@ Class TableHandler{
             $aFields2Draw[$iKey]['row'] = $aCoords[0];
             $aFields2Draw[$iKey]['col'] = $aCoords[1];
         }
-		if(!is_array($aDestinationMap))
+		if(!is_array($aDestinationMap) || !is_array($aFields2Draw))
 		{
 			return false;
 		}
+        $this->_updateBoardMatrix($aFields2Draw,$sSourceColor);
 		return $aFields2Draw;
 	}
+
+    private function _updateBoardMatrix($aFields2Draw,$sSourceColor)
+    {
+        $this->oLog->log(__FILE__,__FUNCTION__,'process-22 (must be $aFields2Draw)',print_r($aFields2Draw,true));
+        foreach($aFields2Draw as $aCoords)
+        {
+            $aCoords['row'] = $aCoords['row'] == '' ? 0 : $aCoords['row'];
+            $aCoords['col'] = $aCoords['col'] == '' ? 0 : $aCoords['col'];
+            $this->oLog->log(__FILE__,__FUNCTION__,'process-22 (must be $aCoords)',$aCoords['row'].'-'.$aCoords['col']);
+            $this->aBoardMatrix[$aCoords['row']][$aCoords['col']] = $sSourceColor;
+        }
+        $sUpdatedBoardMatrix = serialize($this->aBoardMatrix);
+        $this->oLog->log(__FILE__,__FUNCTION__,'process-22 (must be json)',$sUpdatedBoardMatrix);
+        $this->oDBController->getConnection($this->dbUser,$this->dbPassword,$this->dbName,$this->dbServer);
+        $this->oDBController->query('UPDATE '.$this->active_table.' SET board = \''.$sUpdatedBoardMatrix.'\'');
+    }
 
     private function _saveDestinationMap($aDestinationMap)
     {

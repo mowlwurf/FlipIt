@@ -168,7 +168,7 @@ Class TableHandler{
         if(!is_array($this->aBoardMatrix[0]))
             return NULL;
 
-        $this->oLog->log(__FILE__,__FUNCTION__,'process-11 (must be colormap)',print_r($aPlayerFields,true));
+
         $aAvailableColors = false;
         //startcords player1 0 & 0
         foreach($aPlayerFields as $iFieldNr => $aCoords)
@@ -186,7 +186,6 @@ Class TableHandler{
                 }
             }
         }
-        $this->oLog->log(__FILE__,__FUNCTION__,'process-12 (must be colormap)',serialize($aAvailableColors));
         return $aAvailableColors;
     }
 
@@ -196,9 +195,7 @@ Class TableHandler{
         $this->oDBController->getConnection($this->dbUser,$this->dbPassword,$this->dbName,$this->dbServer);
         $this->oDBController->query('SELECT `fields_player1` FROM '.$this->active_table);
         $aJson = $this->oDBController->getResult(); // todo SELECT one statment in dbhandler
-        $this->oLog->log(__FILE__,__FUNCTION__,'process-11 (must be colormap)',print_r($aJson,true));
         $aActualPlayerFields=unserialize($aJson[0]['fields_player1']);
-        $this->oLog->log(__FILE__,__FUNCTION__,'process-13 (must be colormap)',print_r($aActualPlayerFields,true));
         return $aActualPlayerFields;
     }
 
@@ -214,7 +211,6 @@ Class TableHandler{
             $aActualPlayerFields[] = array('0'=>$iRow,'1'=>$iCol);
         }
         $this->oDBController->query('UPDATE '.$this->active_table.' SET `fields_player1` = \''.serialize($aActualPlayerFields).'\', `points_player1` = `points_player1` + 1');
-        //$this->oLog->log(__FILE__,__FUNCTION__,'process-10 (must be coordinatesys)',print_r($aActualPlayerFields,true));
     }
     // TODO END
 	/**
@@ -250,8 +246,6 @@ Class TableHandler{
 	{
 		foreach($aColidedTabs as $iKey => $aTabInfo)
 		{
-            $this->oLog->log(__FILE__,__FUNCTION__,'process-5 (must be coordinate)',$aTabInfo['row'].'/'.$aTabInfo['col']);
-            $this->oLog->log(__FILE__,__FUNCTION__,'process-6 (must be color)',$sSourceColor.' == '.$this->aBoardMatrix[$aTabInfo['row']][$aTabInfo['col']]);
 			if($sSourceColor == $this->aBoardMatrix[$aTabInfo['row']][$aTabInfo['col']])
 			{
                 $aFlipingTabs[] = $aColidedTabs[$iKey];
@@ -264,7 +258,6 @@ Class TableHandler{
 	{
 		$aColidingTabIndex= array();
 		$i = 0;
-        $this->oLog->log(__FILE__,__FUNCTION__,'process-4 (must be coordinatesys)',print_r($aPlayerFields,true));
         foreach($aPlayerFields as $iKey => $aCoords)
         {
             foreach($this->aColidingMethric as $sDirection => $sColidisionInfo)
@@ -274,10 +267,6 @@ Class TableHandler{
                 $iCol      = trim($aCoords[1]) == '' ? 0 : $aCoords[1];
                 $aColidingTabIndex[$i]['row'] 	= $aColision[0] == 0 ? $iRow : $this->calcWithString($iRow,$aColision[0]);
                 $aColidingTabIndex[$i]['col'] 	= $aColision[1] == 0 ? $iCol : $this->calcWithString($iCol,$aColision[1]);
-                $sLog = $aColision[0] == 0 ?  'r'.$iRow : $this->calcWithString($iRow,$aColision[0]);
-                $sLog .= '-';
-                $sLog .= $aColision[1] == 0 ? 'r'.$iCol : $this->calcWithString($iCol,$aColision[1]);
-                    $this->oLog->log(__FILE__,__FUNCTION__,'process-4 (must be coordinatesys)',$sLog);
                 $i++;
             }
         }

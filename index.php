@@ -4,6 +4,7 @@ include('inc/class.DBController.php');
 include('inc/class.TableGen.inc.php');
 include('inc/class.Players.inc.php');
 $oTab  = new TableGen(True);
+$oTab->saveBoard();
 $oPlayer1 = new Players();
 $aBoardMatrix = $oTab->getBoardMatrix();
 ?>
@@ -24,10 +25,9 @@ $aBoardMatrix = $oTab->getBoardMatrix();
                 type: 		"POST",
                 url: 		'tabhandler.php',
                 data: 		'action=colorswitcher',
-                beforeSend: function( data ) {
-                },
                 success: function(rsp)
                 {
+                    alert(rsp.status);
                     if(rsp.status == 'success')
                     {
                         $.each(rsp.data, function(i, v) {

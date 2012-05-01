@@ -51,9 +51,19 @@ Class TableGen{
 		{
 			$this->_generateBoard();
 		}
-        $this->oDBController = new DbController();
-        $this->__saveBoardMatrix($this->aBoardMatrix);
+
+
 	}
+
+    public function saveBoard()
+    {
+        $this->oDBController = new DbController();
+        $bSaved = $this->__saveBoardMatrix($this->aBoardMatrix);
+        if(!$bSaved)
+            return false;
+
+        return true;
+    }
 	
 	/** 
 	 * <b>BoardConfigHandler</b><br/>
@@ -61,6 +71,9 @@ Class TableGen{
 	 */
 	function getBoardMatrix()
 	{
+        if($this->is_empty($this->aBoardMatrix[0]))
+            return NULL;
+
 		return $this->aBoardMatrix;
 	}
 
@@ -69,11 +82,20 @@ Class TableGen{
         $sBoardMatrix = serialize($aBoardMatrix);
         $iBoardSize   = $this->iBoardSize;
         $iColors      = $this->iColorCount;
-        $this->oDBController->getConnection($this->dbUser,$this->dbPassword,$this->dbName,$this->dbServer);
+        $bConnected   = $this->oDBController->getConnection($this->dbUser,$this->dbPassword,$this->dbName,$this->dbServer);
+        if(!$bConnected)
+            return false;
+
         //TRUNCATE TABLE  `actual_board`
         $this->oDBController->query('TRUNCATE TABLE '.$this->active_table);
-        $this->oDBController->query('INSERT INTO '.$this->active_table.' VALUES (\''.$sBoardMatrix.'\',\'\',\''.$iBoardSize.'\',\''.$iColors.'\')');
+        $this->oDBController->query('INSERT INTO '.$this->active_table.' VALUES (\''.$sBoardMatrix.'\',\'\',0,\''.$iBoardSize.'\',\''.$iColors.'\')');
+        $aErrors = $this->oDBController->error(1);
         $this->oDBController->clearCache();
+        if($this->is_empty($aErrors))
+        {
+            return true;
+        }
+        return false;
     }
 
 	private function _generateBoard()

@@ -1,12 +1,12 @@
 <?php
-
-
 /**
  * TableHandler
  * berechnet Spielkollisionen und liefert Spielfeldreaktionen
  * @author d.naumann
  * @package flipit
  */
+include('inc/class.LogDoc.inc.php');
+
 Class TableHandler{
 
     private $oDbController    = false;
@@ -22,16 +22,31 @@ Class TableHandler{
 
 	function __construct($bDebug=false)
 	{
-        $this->oLog = new LogDoc();
         $this->oDBController = new DbController();
+        $this->oLog = new LogDoc();
+
         if($bDebug)
         {
             //$oUtils -> UnitTest('0/0');
         }
-        include('cnf/config.inc.php');
+	}
+
+    function setStartView()
+    {
+        require('cnf/config.inc.php');
+        if(!is_array($aConfig))
+        {
+            return NULL;
+        }
         $this->_readConfig($aConfig);
         $this->aBoardMatrix = $this->__getBoardMatrix();
-	}
+        $this->_setPlayerField(0,0);
+        if(!is_array($this->aBoardMatrix))
+        {
+            return NULL;
+        }
+        return true;
+    }
 
     private function _readConfig($aConfig)
     {
@@ -48,6 +63,7 @@ Class TableHandler{
 
     private function __getBoardMatrix()
     {
+        $this->oDBController = new DbController();
         $aBoardMatrix = false;
         $this->oDBController->getConnection($this->dbUser,$this->dbPassword,$this->dbName,$this->dbServer);
         $this->oDBController->query('SELECT * FROM '.$this->active_table);
@@ -146,8 +162,15 @@ Class TableHandler{
     private function _getAvailableColors()
     {
         $aPlayerFields    = $this->_getPlayerFields();
+        if(!is_array($aPlayerFields))
+            return false;
+
+        if(!is_array($this->aBoardMatrix[0]))
+            return NULL;
+
         $this->oLog->log(__FILE__,__FUNCTION__,'process-11 (must be colormap)',print_r($aPlayerFields,true));
-        $aAvailableColors = Array();
+        $aAvailableColors = false;
+        //startcords player1 0 & 0
         foreach($aPlayerFields as $iFieldNr => $aCoords)
         {
             $aCoords[0] = trim($aCoords[0]) == '' ? 0 : $aCoords[0];
@@ -157,7 +180,7 @@ Class TableHandler{
                 $aConnecting                = explode('/',$sConnectingInfo);
                 $aConnectingTabIndex['row'] = $aConnecting[0] == 0 ? $aCoords[0] 	: $this->calcWithString($aCoords[0],$aConnecting[0]);
                 $aConnectingTabIndex['col'] = $aConnecting[1] == 0 ? $aCoords[1]    : $this->calcWithString($aCoords[1],$aConnecting[1]);
-                if(!in_array($this->aBoardMatrix[$aConnectingTabIndex['row']][$aConnectingTabIndex['col']],$aAvailableColors))
+                if(!$aAvailableColors || !in_array($this->aBoardMatrix[$aConnectingTabIndex['row']][$aConnectingTabIndex['col']],$aAvailableColors))
                 {
                     $aAvailableColors[] = $this->aBoardMatrix[$aConnectingTabIndex['row']][$aConnectingTabIndex['col']];
                 }
@@ -190,7 +213,7 @@ Class TableHandler{
         {
             $aActualPlayerFields[] = array('0'=>$iRow,'1'=>$iCol);
         }
-        $this->oDBController->query('UPDATE '.$this->active_table.' SET `fields_player1` = \''.serialize($aActualPlayerFields).'\'');
+        $this->oDBController->query('UPDATE '.$this->active_table.' SET `fields_player1` = \''.serialize($aActualPlayerFields).'\', `points_player1` = `points_player1` + 1');
         //$this->oLog->log(__FILE__,__FUNCTION__,'process-10 (must be coordinatesys)',print_r($aActualPlayerFields,true));
     }
     // TODO END

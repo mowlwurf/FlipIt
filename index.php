@@ -27,7 +27,6 @@ $aBoardMatrix = $oTab->getBoardMatrix();
                 data: 		'action=colorswitcher',
                 success: function(rsp)
                 {
-                    alert(rsp.status);
                     if(rsp.status == 'success')
                     {
                         $.each(rsp.data, function(i, v) {
@@ -47,13 +46,12 @@ $aBoardMatrix = $oTab->getBoardMatrix();
 
         function flip(sColor)
         {
+            alert(sColor);
             $.ajax({
                 dataType:	'json',
                 type: 		"POST",
                 url: 		'tabhandler.php',
                 data: 		'action=flip&color='+sColor,
-                beforeSend: function( data ) {
-                },
                 success: function(rsp)
                 {
                     if(rsp.status == 'success')
@@ -62,7 +60,8 @@ $aBoardMatrix = $oTab->getBoardMatrix();
                             var iRow = v.row == null || v.row == '' ? 0 : v.row;
                             var iCol = v.col == null || v.col == '' ? 0 : v.col;
                             var sId  = iRow+'X'+iCol;
-                            $('#'+sId).css('background-color',sColor);
+                            alert(sId);
+                            $('#'+sId).css('background-color', v.sourcecolor);
                         });
                     }
                     else
@@ -82,16 +81,17 @@ $aBoardMatrix = $oTab->getBoardMatrix();
 				dataType:	'json',
 				type: 		"POST",
 				url: 		'tabhandler.php',
-				//data: 		'action=flip&index='+index,
+				data: 		'action=flip&index='+index,
 			 	beforeSend: function( data ) {
 				},
 				success: function(rsp)
 				{
 					alert(rsp.status);
-                    alert(rsp.sourcecolor);
                     $.each(rsp.data, function(i, v) {
+                        //alert(v.sourcecolor);
                         var sId = v.row+'/'+v.col;
-                        $('#'+sId).attribute('background-color',rsp.sourcecolor);
+                        alert(sId);
+                        //$('#'+sId).attribute('background-color',v.sourcecolor);
                     });
 				}
 			});

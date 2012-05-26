@@ -117,14 +117,12 @@ Class TableHandler{
 		}
         $aPlayerFields      = $this->_getPlayerFields();
 		$aDestinationMap	= $this->_getDestinationMap($aPlayerFields,$sSourceColor);
-        $this->oLog->log(__FILE__,__FUNCTION__,'process-2 (must be coordinatesys)',print_r($aPlayerFields,true));
-        $this->oLog->log(__FILE__,__FUNCTION__,'process-2 (must be sourceclor)',$sSourceColor);
-        $this->oLog->log(__FILE__,__FUNCTION__,'process-2 (must be coordinatesys)',print_r($aDestinationMap,true));
         $this->_saveDestinationMap($aDestinationMap);
         foreach($aPlayerFields as $iKey => $aCoords)
         {
-            $aFields2Draw[$iKey]['row'] = $aCoords[0];
-            $aFields2Draw[$iKey]['col'] = $aCoords[1];
+            $aFields2Draw[$iKey]['row']         = $aCoords[0];
+            $aFields2Draw[$iKey]['col']         = $aCoords[1];
+            $aFields2Draw[$iKey]['sourcecolor'] = $sSourceColor;
         }
 		if(!is_array($aDestinationMap) || !is_array($aFields2Draw))
 		{

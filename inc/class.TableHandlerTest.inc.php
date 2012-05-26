@@ -21,8 +21,9 @@ Class TableHandlerTest extends UnitTestCase
         $aAvailableColors = $oTableHandler->getColorSwitcher();
         $this->assertNotNull($aAvailableColors);
         $this->assertNotNull($aAvailableColors[1]);
-        print_r($aAvailableColors);
         $this->assertIsA($aAvailableColors,'Array');
-        $this->assertIsA($oTableHandler->getColidingTabs($aAvailableColors[0]),'Array');
+        $aColidedTabs = $oTableHandler->getColidingTabs($aAvailableColors[0]);
+        print_r($aColidedTabs);
+        $this->assertIsA($aColidedTabs[0],'Array');
     }
 }

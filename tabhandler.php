@@ -21,7 +21,7 @@ include('inc/class.TableHandler.inc.php');
 // action dispatcher control
 $sAction = isset($_POST['action']) && trim($_POST['action']) != '' ? $_POST['action'] : $_GET['action'];
 // index tabpositionhandler
-$sColor = isset($_POST['color']) && trim($_POST['color']) != '' ? $_POST['color'] : false;
+$sColor = isset($_POST['color']) && trim($_POST['color']) != '' ? $_POST['color'] : $_GET['color'];
  		
 switch($sAction)
 {

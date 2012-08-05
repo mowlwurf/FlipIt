@@ -12,7 +12,7 @@ Class BoardHandler extends Board
 {
 
 	private $boardInformation = array(
-		'Board' => null,
+		'Board'   => null,
 		'Player1' => null
 	);
 
@@ -70,9 +70,9 @@ Class BoardHandler extends Board
 
 	public function getColidingTabs($sourceColor)
 	{
-		$playerFields     = $this->boardInformation['Player1']['fields'];
-		$destinationMap   = $this->getDestinationMap($playerFields, $sourceColor);
-		$key = 0;
+		$playerFields   = $this->boardInformation['Player1']['fields'];
+		$destinationMap = $this->getDestinationMap($playerFields, $sourceColor);
+		$key            = 0;
 		$this->saveDestinationMap($destinationMap);
 		if (!is_array($destinationMap) || !is_array($playerFields)) {
 			return false;
@@ -95,7 +95,7 @@ Class BoardHandler extends Board
 		if (empty($board) || empty($fields2Draw)) {
 			return false;
 		}
-		foreach ($fields2Draw as $field => $coordinates ) {
+		foreach ($fields2Draw as $field => $coordinates) {
 			$board[$coordinates['row']][$coordinates['col']] = $sourceColor;
 		}
 		$this->saveBoard($board);
@@ -119,7 +119,7 @@ Class BoardHandler extends Board
 			$coordinates[0] = trim($coordinates[0]) == '' ? 0 : $coordinates[0];
 			$coordinates[1] = trim($coordinates[1]) == '' ? 0 : $coordinates[1];
 			foreach ($this->colidingMethric as $direction => $connectingInfo) {
-				$connectingMap                = explode('/', $connectingInfo);
+				$connectingMap             = explode('/', $connectingInfo);
 				$connectingTabIndex['row'] = $connectingMap[0] == 0 ? $coordinates[0] : $this->calcWithString($coordinates[0], $connectingMap[0]);
 				$connectingTabIndex['col'] = $connectingMap[1] == 0 ? $coordinates[1] : $this->calcWithString($coordinates[1], $connectingMap[1]);
 				if (!$availableColors || !in_array($this->boardInformation['Board'][$connectingTabIndex['row']][$connectingTabIndex['col']], $availableColors)) {
@@ -150,7 +150,7 @@ Class BoardHandler extends Board
 	private function setColidingTabs($playerFields)
 	{
 		$colidingTabIndex = array();
-		$i                 = 0;
+		$i                = 0;
 		foreach ($playerFields as $iKey => $coordinates) {
 			foreach ($this->colidingMethric as $direction => $colisionInfo) {
 				$colision                    = explode('/', $colisionInfo);

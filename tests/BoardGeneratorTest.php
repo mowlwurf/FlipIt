@@ -51,12 +51,12 @@ Class TableGeneratorTest extends PHPUnit_Framework_TestCase
 
 		$this->reflectionGenerateBoard = $this->reflection->getMethod('generateBoard');
 		$this->reflectionGenerateBoard->setAccessible(true);
-		$isGenerated = $this->reflectionGenerateBoard->invokeArgs($this->object,$params);
+		$isGenerated = $this->reflectionGenerateBoard->invokeArgs($this->object, $params);
 
 		$this->assertTrue($isGenerated);
 
 		$board = $this->object->getBoard();
-		if ($board === false){
+		if ($board === false) {
 			$this->fail('Couldn\'t generate Board');
 		} elseif (!is_array($board) || empty($board)) {
 			$this->fail('Board not formated');
@@ -68,7 +68,7 @@ Class TableGeneratorTest extends PHPUnit_Framework_TestCase
 
 	public function testRndColor()
 	{
-		$possibleColors = array('red','green','yellow','blue','purple','pink','cyan');
+		$possibleColors = array('red', 'green', 'yellow', 'blue', 'purple', 'pink', 'cyan');
 
 		$this->reflectionRndColor = $this->reflection->getMethod('rndColor');
 		$this->reflectionRndColor->setAccessible(true);

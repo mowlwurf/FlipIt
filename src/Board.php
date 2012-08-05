@@ -18,6 +18,7 @@ class Board
 
 	/**
 	 * open memcache cc if theres none
+	 *
 	 * @return bool
 	 */
 	protected function getMemcacheConnection()
@@ -33,8 +34,8 @@ class Board
 
 	public function getBoardInformation()
 	{
-		$boardInformations = array();
-		$boardInformations['Board'] = $this->memcacheConnection->get('Board');
+		$boardInformations            = array();
+		$boardInformations['Board']   = $this->memcacheConnection->get('Board');
 		$boardInformations['Player1'] = $this->memcacheConnection->get('Player1');
 		return $boardInformations;
 	}
@@ -54,8 +55,8 @@ class Board
 
 	protected function savePlayerField($iRow, $iCol)
 	{
-		$actualPlayer = $this->getPlayer();
-		$actualPlayer['fields'][$iRow.'/'.$iCol] = array($iRow,$iCol);
+		$actualPlayer                                = $this->getPlayer();
+		$actualPlayer['fields'][$iRow . '/' . $iCol] = array($iRow, $iCol);
 		$this->memcacheConnection->set('Player1', $actualPlayer);
 	}
 
@@ -77,7 +78,7 @@ class Board
 
 	public function setPlayerPoints($points = 0)
 	{
-		$player = $this->getPlayer();
+		$player           = $this->getPlayer();
 		$player['points'] = $points;
 		$this->savePlayer($player);
 	}

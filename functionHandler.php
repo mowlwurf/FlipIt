@@ -25,30 +25,30 @@ $points = isset($_POST['points']) && trim($_POST['points']) != '' ? $_POST['poin
 
 switch ($action) {
 	case 'colorswitcher':
-	{
+		{
 		$boardHandler = new BoardHandler();
 		$boardHandler->setStartView();
 		$colors2Chose = $boardHandler->getColorSwitcher();
 		$jSONAnswer   = Array('status' => 'success', 'data' => $colors2Chose);
 		echo json_encode($jSONAnswer);
 		break;
-	}
+		}
 	case 'flip':
-	{
+		{
 		$boardHandler = new BoardHandler();
 		$colisionTabs = $boardHandler->getColidingTabs($color);
 		$sJSONAnswer  = Array('status' => 'success', 'data' => $colisionTabs, 'count' => 2);
 		echo json_encode($sJSONAnswer);
 		break;
-	}
+		}
 	case 'calc':
-	{
+		{
 		$boardHandler = new BoardHandler();
 		$boardHandler->setPlayerPoints($points);
-		$sJSONAnswer  = Array('status' => 'success', 'data' => $points);
+		$sJSONAnswer = Array('status' => 'success', 'data' => $points);
 		echo json_encode($sJSONAnswer);
 		break;
-	}
+		}
 }
 
 

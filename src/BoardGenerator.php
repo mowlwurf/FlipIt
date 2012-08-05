@@ -36,7 +36,11 @@ Class BoardGenerator extends Board{
 
 	private function setBoardSize($boardSize)
 	{
+		if (false === $boardSize) {
+			return false;
+		}
 		$this->boardSize = $boardSize;
+		return true;
 	}
 
 	private function generateBoard()
@@ -49,12 +53,22 @@ Class BoardGenerator extends Board{
 			}
 		}
 		$this->saveBoard($boardMatrix);
+		if (!empty($boardMatrix)) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	private function rndColor()
 	{
 		$rand = rand(0, $this->colorCount-1);
-		return $this->colorMap[$rand];
+		$color = $this->colorMap[$rand];
+
+		if (!is_string($color)) {
+			return null;
+		}
+		return $color;
 	}
 
 }

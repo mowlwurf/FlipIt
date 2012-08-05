@@ -34,6 +34,11 @@ Class TableGeneratorTest extends PHPUnit_Framework_TestCase
 	 */
 	public $reflectionGenerateBoard;
 
+	/**
+	 * @reflectionMethod
+	 */
+	public $reflectionRndColor;
+
 	public function setUp()
 	{
 		$this->object     = new BoardGenerator();
@@ -46,7 +51,9 @@ Class TableGeneratorTest extends PHPUnit_Framework_TestCase
 
 		$this->reflectionGenerateBoard = $this->reflection->getMethod('generateBoard');
 		$this->reflectionGenerateBoard->setAccessible(true);
-		$this->reflectionGenerateBoard->invokeArgs($this->object,$params);
+		$isGenerated = $this->reflectionGenerateBoard->invokeArgs($this->object,$params);
+
+		$this->assertTrue($isGenerated);
 
 		$board = $this->object->getBoard();
 		if ($board === false){
@@ -57,5 +64,30 @@ Class TableGeneratorTest extends PHPUnit_Framework_TestCase
 
 			$this->assertTrue(true);
 		}
+	}
+
+	public function testRndColor()
+	{
+		$possibleColors = array('red','green','yellow','blue','purple','pink','cyan');
+
+		$this->reflectionRndColor = $this->reflection->getMethod('rndColor');
+		$this->reflectionRndColor->setAccessible(true);
+		$randomColor = $this->reflectionRndColor->invokeArgs($this->object, array());
+		$this->assertNotNull($randomColor);
+		if (!in_array($randomColor, $possibleColors)) {
+			$this->fail();
+		}
+	}
+
+	public function testSetBoardSize()
+	{
+		$this->reflectionSetBoardSize = $this->reflection->getMethod('setBoardSize');
+		$this->reflectionSetBoardSize->setAccessible(true);
+		$isSet = $this->reflectionSetBoardSize->invokeArgs($this->object, array(7));
+		$this->assertTrue($isSet);
+
+		$this->reflectionBoardSize = $this->reflection->getProperty('boardSize');
+		$this->reflectionBoardSize->setAccessible(true);
+		$this->assertEquals(7, $this->reflectionBoardSize->getValue($this->object));
 	}
 }

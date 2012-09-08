@@ -23,32 +23,38 @@ $color = isset($_POST['color']) && trim($_POST['color']) != '' ? $_POST['color']
 // points player has achieved
 $points = isset($_POST['points']) && trim($_POST['points']) != '' ? $_POST['points'] : 0;
 
+$boardHandler = new BoardHandler();
+
 switch ($action) {
 	case 'colorswitcher':
-		{
-		$boardHandler = new BoardHandler();
-		$boardHandler->setStartView();
+	{
 		$colors2Chose = $boardHandler->getColorSwitcher();
 		$jSONAnswer   = Array('status' => 'success', 'data' => $colors2Chose);
 		echo json_encode($jSONAnswer);
 		break;
-		}
+	}
 	case 'flip':
-		{
-		$boardHandler = new BoardHandler();
+	{
 		$colisionTabs = $boardHandler->getColidingTabs($color);
-		$sJSONAnswer  = Array('status' => 'success', 'data' => $colisionTabs, 'count' => 2);
+		foreach($colisionTabs as $tabs2Check) {
+			$board = $boardHandler->getBoard();
+			$fieldColor = $board[$tabs2Check['row']][$tabs2Check['col']];
+			if ($color == $fieldColor) {
+				$boardHandler->getColidingTabs($fieldColor);
+			}
+		}
+		$boardHandler->setPlayerPoints(count($colisionTabs));
+		$sJSONAnswer  = Array('status' => 'success', 'data' => $colisionTabs, 'count' => count($colisionTabs));
 		echo json_encode($sJSONAnswer);
 		break;
-		}
+	}
 	case 'calc':
-		{
-		$boardHandler = new BoardHandler();
+	{
 		$boardHandler->setPlayerPoints($points);
 		$sJSONAnswer = Array('status' => 'success', 'data' => $points);
 		echo json_encode($sJSONAnswer);
 		break;
-		}
+	}
 }
 
 

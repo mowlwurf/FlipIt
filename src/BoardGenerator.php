@@ -20,10 +20,12 @@ Class BoardGenerator extends Board
 		'silver', 'gold', 'grey', 'lightcyan', 'lightred', 'darkred', 'darkcyan' // ext2 colors
 	);
 
-	public function __construct($size = null, $colors = null)
+	public function __construct($size = null, $colors = null, $reset = null)
 	{
 		$this->getMemcacheConnection();
-		if ($this->memcacheConnection->get('board') === false) {
+		if ($reset) {
+			$this->memcacheConnection->flush();
+		} elseif ($this->memcacheConnection->get('board') === false) {
 			if (null !== $size) {
 				$this->setBoardSize($size);
 			}

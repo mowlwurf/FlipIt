@@ -26,4 +26,8 @@ Class BoardTest extends PHPUnit_Framework_TestCase
 		$this->reflection = new ReflectionClass($this->object);
 	}
 
+	public function testDummy()
+	{
+		$this->assertTrue(true);
+	}
 }

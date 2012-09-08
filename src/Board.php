@@ -12,9 +12,22 @@
  *
  * handles memcache connection for childclasses
  */
+
+if (file_exists('../inc/Logger.php')) {
+	require_once('../inc/Logger.php');
+} elseif (file_exists('inc/Logger.php')) {
+	require_once('inc/Logger.php');
+}
+
+
 class Board
 {
 	protected $memcacheConnection = null;
+
+	public function __construct()
+	{
+		$this->logger = new Logger();
+	}
 
 	/**
 	 * open memcache cc if theres none
@@ -28,6 +41,7 @@ class Board
 			$this->memcacheConnection->addServer("localhost", 11211);
 			return true;
 		} else {
+			$this->logger->addRecord('Couldn\'t connect to memcache');
 			return false;
 		}
 	}
@@ -43,6 +57,7 @@ class Board
 	public function saveBoard($boardMatrix)
 	{
 		if (false === $this->memcacheConnection) {
+			$this->logger->addRecord('Couldn\'t save boardmatrix to memcache');
 			return false;
 		}
 		$this->memcacheConnection->set('Board', $boardMatrix);
@@ -78,8 +93,8 @@ class Board
 
 	public function setPlayerPoints($points = 0)
 	{
-		$player           = $this->getPlayer();
-		$player['points'] = $points;
+		$player = $this->getPlayer();
+		$player['points'] += $points;
 		$this->savePlayer($player);
 	}
 }

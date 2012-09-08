@@ -9,7 +9,7 @@
 
 require_once('../src/BoardGenerator.php');
 
-Class TableGeneratorTest extends PHPUnit_Framework_TestCase
+Class BoardGeneratorTest extends PHPUnit_Framework_TestCase
 {
 	/**
 	 * @var object

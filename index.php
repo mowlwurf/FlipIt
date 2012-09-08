@@ -5,9 +5,11 @@ session_start();
 error_reporting(E_ALL & ~E_NOTICE);
 ini_set('display_errors', '1');
 
+require('inc/Logger.php');
 require('src/BoardGenerator.php');
 require('src/MenuBar.php');
 
+//$logger         = new Logger();
 $boardGenerator = new BoardGenerator();
 $menuBar        = new MenuBar();
 
@@ -21,7 +23,7 @@ $board     = $boardGenerator->getBoard();
 	    <script src="js/jquery-1.7.2.min.js"></script>
 	    <script type="text/javascript">
 			$(document).ready(function () {
-				reloadColorSwitcher();
+				reloadColorSwitcher(null);
 			});
 
 			function startNewGame() {
@@ -32,24 +34,27 @@ $board     = $boardGenerator->getBoard();
 					data:'action=newGame',
 					success:function (rsp) {
 						if (rsp.status === 'success') {
-							<?php
-								header('Location: http://www.devgarden.com/FlipIt');
-							?>
+							window.location.replace('http://devgarden.com/FlipIt/');
 						}
 					}
 				});
 			}
 
-			function reloadColorSwitcher() {
+			function reloadColorSwitcher(color) {
 				$.ajax({
 					dataType:'json',
 					type:"POST",
 					url:'functionHandler.php',
 					data:'action=colorswitcher',
 					success:function (rsp) {
+						var colors = Array('red','green','yellow','blue','purple','pink','cyan');
+
 						if (rsp.status == 'success') {
+							$.each(colors, function(k, sv) {
+								$('#' + sv).hide();
+							});
 							$.each(rsp.data, function (i, v) {
-								if (v !== null) {
+								if (v !== null && color != v) {
 									$('#' + v).show();
 								}
 							});
@@ -71,7 +76,7 @@ $board     = $boardGenerator->getBoard();
 						if (rsp.status == 'success') {
 						}
 						else {
-							alert('ColorPicker konnte nicht geladen werden.');
+							alert('Scoret');
 						}
 					}
 				});
@@ -100,7 +105,7 @@ $board     = $boardGenerator->getBoard();
 						}
 					}
 				});
-				reloadColorSwitcher();
+				reloadColorSwitcher(color);
 			}
 
 			function flipit(iRow, iColumn) {
@@ -151,20 +156,13 @@ $board     = $boardGenerator->getBoard();
 		<table width="100%">
 		    <tr>
 				<!-- 'red','green','yellow','blue','purple','pink','cyan',-->
-		        <td width="50px" height="50px" id="red" style="display:none;background-color:red;" onclick="flip('red')">
-		            &nbsp;</td>
-		        <td width="50px" height="50px" id="green" style="display:none;background-color:green;" onclick="flip('green')">
-		            &nbsp;</td>
-		        <td width="50px" height="50px" id="yellow" style="display:none;background-color:yellow;"
-		            onclick="flip('yellow')">&nbsp;</td>
-		        <td width="50px" height="50px" id="blue" style="display:none;background-color:blue;" onclick="flip('blue')">
-		            &nbsp;</td>
-		        <td width="50px" height="50px" id="purple" style="display:none;background-color:purple;"
-		            onclick="flip('purple')">&nbsp;</td>
-		        <td width="50px" height="50px" id="pink" style="display:none;background-color:pink;" onclick="flip('pink')">
-		            &nbsp;</td>
-		        <td width="50px" height="50px" id="cyan" style="display:none;background-color:cyan;" onclick="flip('cyan')">
-		            &nbsp;</td>
+		        <td width="50px" height="50px" id="red" style="display:none;background-color:red;" onclick="flip('red')">&nbsp;</td>
+		        <td width="50px" height="50px" id="green" style="display:none;background-color:green;" onclick="flip('green')">&nbsp;</td>
+		        <td width="50px" height="50px" id="yellow" style="display:none;background-color:yellow;" onclick="flip('yellow')">&nbsp;</td>
+		        <td width="50px" height="50px" id="blue" style="display:none;background-color:blue;" onclick="flip('blue')">&nbsp;</td>
+		        <td width="50px" height="50px" id="purple" style="display:none;background-color:purple;" onclick="flip('purple')">&nbsp;</td>
+		        <td width="50px" height="50px" id="pink" style="display:none;background-color:pink;" onclick="flip('pink')">&nbsp;</td>
+		        <td width="50px" height="50px" id="cyan" style="display:none;background-color:cyan;" onclick="flip('cyan')">&nbsp;</td>
 		    </tr>
 		</table>
 	</body>

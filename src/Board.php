@@ -91,10 +91,10 @@ class Board
 		return $player['points'];
 	}
 
-	public function setPlayerPoints($points = 0)
+	public function setPlayerPoints()
 	{
 		$player = $this->getPlayer();
-		$player['points'] += $points;
+		$player['points'] = count($player['fields']);
 		$this->savePlayer($player);
 	}
 }

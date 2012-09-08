@@ -43,8 +43,8 @@ switch ($action) {
 				$boardHandler->getColidingTabs($fieldColor);
 			}
 		}
-		$boardHandler->setPlayerPoints(count($colisionTabs));
-		$sJSONAnswer  = Array('status' => 'success', 'data' => $colisionTabs, 'count' => count($colisionTabs));
+		$boardHandler->setPlayerPoints();
+		$sJSONAnswer  = Array('status' => 'success', 'data' => $colisionTabs, 'count' => $boardHandler->getPlayerPoints());
 		echo json_encode($sJSONAnswer);
 		break;
 	}

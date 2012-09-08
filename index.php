@@ -14,6 +14,7 @@ $boardGenerator = new BoardGenerator();
 $menuBar        = new MenuBar();
 
 $menuItems = $menuBar->getMenuItems();
+$menuPlugins = $menuBar->getMenuPlugins();
 $board     = $boardGenerator->getBoard();
 ?>
 
@@ -67,19 +68,7 @@ $board     = $boardGenerator->getBoard();
 			}
 
 			function reloadScoreTable(score) {
-				$.ajax({
-					dataType:'json',
-					type:"POST",
-					url:'functionHandler.php',
-					data:'action=calc&score=' + score,
-					success:function (rsp) {
-						if (rsp.status == 'success') {
-						}
-						else {
-							alert('Scoret');
-						}
-					}
-				});
+				$('#scorePlayer1').val(score);
 			}
 
 			function flip(color) {
@@ -92,13 +81,13 @@ $board     = $boardGenerator->getBoard();
 					},
 					success:function (rsp) {
 						if (rsp.status == 'success') {
-							//reloadScoreTable(rsp.count);
 							$.each(rsp.data, function (i, v) {
 								var iRow = v.row == null || v.row == '' ? 0 : v.row;
 								var iCol = v.col == null || v.col == '' ? 0 : v.col;
 								var sId = iRow + 'X' + iCol;
 								$('#' + sId).css('background-color', color);
 							});
+							reloadScoreTable(rsp.count);
 						}
 						else {
 							alert('Fehler beim Berechnen der Kollision.');
@@ -107,40 +96,36 @@ $board     = $boardGenerator->getBoard();
 				});
 				reloadColorSwitcher(color);
 			}
-
-			function flipit(iRow, iColumn) {
-				var index = iRow + '/' + iColumn;
-				alert(index);
-				$.ajax({
-					dataType:'json',
-					type:"POST",
-					url:'functionHandler.php',
-					data: 		'action=flip&index='+index,
-					beforeSend:function (data) {
-					},
-					success:function (rsp) {
-						$.each(rsp.data, function (i, v) {
-							var sId = v.row + '/' + v.col;
-							$('#' + sId).attribute('background-color', rsp.sourcecolor);
-						});
-					}
-				});
-			}
-	    </script>
+		</script>
 	</head>
 	<body>
 		<form action="" method="POST">
 
 		</form>
-		<table width="100%">
-		    <tr>
-				<?php
-				foreach ($menuItems as $menuItem) {
-					echo '<td style="border:1px solid black;padding:3px 1px 3px 1px;max-width:100px;"><input type="button" value="'.$menuItem.'" onclick="startNewGame()"></td>';
-				}
-				?>
-		    </tr>
-		</table>
+		<div width="100%" style="border:1px inset #00008b;">
+			<div width="50%" style="float:left;">
+				<table width="100%">
+					<tr>
+						<?php
+						foreach ($menuItems as $menuItem => $function) {
+							echo '<td style="padding:3px 1px 3px 1px;max-width:100px;"><input type="button" value="'.$menuItem.'" onclick="'.$function.'()"></td>';
+						}
+						?>
+					</tr>
+				</table>
+			</div>
+			<div width="50%" style="float:left;">
+				<table width="100%">
+					<tr>
+						<?php
+						foreach ($menuPlugins as $pluginName => $pluginMask) {
+							echo $pluginMask;
+						}
+						?>
+					</tr>
+				</table>
+			</div>
+		</div>
 		<hr>
 		<table width="100%">
 			<?php
